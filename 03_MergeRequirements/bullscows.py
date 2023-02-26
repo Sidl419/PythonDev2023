@@ -1,6 +1,9 @@
 from collections import defaultdict
 from typing import Optional
 from random import choice
+import argparse
+from urllib import request
+import os
 
 
 def bullscows(guess: str, secret: str) -> tuple[int, int]:
@@ -48,5 +51,28 @@ def gameplay(ask: callable, inform: callable, words: list[str]) -> int:
 
         if bulls == len(secret):
             break
-        
+
     return count
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='bulls and cows game')
+    parser.add_argument('dictionary', type=str, nargs=1, help='allowed words dictionary')
+    parser.add_argument('--length', type=int, default=5, required=False, help='length of allowed words')
+    args = parser.parse_args()
+
+    if os.path.exists(args.dictionary[0]):
+        file_name = args.dictionary[0]
+    else:
+        file_name = args.dictionary[0].split('/')[-1]
+        request.urlretrieve(args.dictionary[0], file_name)
+
+    allowed_words = []
+    with open(file_name) as f:
+        for line in f:
+            line = line.strip()
+            if len(line) == args.length:
+                allowed_words.append(line)
+    
+    count = gameplay(ask=ask, inform=inform, words=allowed_words)
+    print(f"Верно! Вы использовали {count} попыток")
