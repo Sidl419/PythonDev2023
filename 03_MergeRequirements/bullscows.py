@@ -26,11 +26,21 @@ def bullscows(guess: str, secret: str) -> tuple[int, int]:
 
 
 def ask(prompt: str, valid: Optional[list[str]] = None) -> str:
-    guess = input(cowsay(message=prompt, cow=get_random_cow()) + '\n')
+    prompt = f"""
+      ________________ 
+     < {prompt} >
+      ---------------- 
+      \   ^__^
+       \  (*o)\_______        
+          (__)\       )\/\ 
+              ||----W |    
+              ||     ||
+    """
+    guess = input(prompt)
 
     if not valid:
         while guess not in valid:
-            guess = input(cowsay(message=prompt, cow=get_random_cow()) + '\n')
+            guess = input(prompt)
 
     return guess
 
