@@ -1,3 +1,4 @@
+from cowsay import cowsay, get_random_cow
 from collections import defaultdict
 from typing import Optional
 from random import choice
@@ -25,17 +26,17 @@ def bullscows(guess: str, secret: str) -> tuple[int, int]:
 
 
 def ask(prompt: str, valid: Optional[list[str]] = None) -> str:
-    guess = input(prompt)
+    guess = input(cowsay(message=prompt, cow=get_random_cow()) + '\n')
 
     if not valid:
         while guess not in valid:
-            guess = input(prompt)
+            guess = input(cowsay(message=prompt, cow=get_random_cow()) + '\n')
 
     return guess
 
 
 def inform(format_string: str, bulls: int, cows: int) -> None:
-    print(format_string.format(bulls, cows))
+    print(cowsay(message=format_string.format(bulls, cows), cow=get_random_cow()) + '\n')
 
 
 def gameplay(ask: callable, inform: callable, words: list[str]) -> int:
@@ -75,4 +76,4 @@ if __name__ == '__main__':
                 allowed_words.append(line)
     
     count = gameplay(ask=ask, inform=inform, words=allowed_words)
-    print(f"Верно! Вы использовали {count} попыток")
+    print(cowsay(message=f"Верно! Вы использовали {count} попыток", cow=get_random_cow()) + '\n')
