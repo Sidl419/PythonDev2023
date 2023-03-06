@@ -10,7 +10,7 @@ def complete_saythink(pfx, line, beg, end):
         default_tongue = ['ii', 'mn', 'qk', 'df', 'dk', 'uu']
         for param in input_str[1:]:
             if param.startswith("--") and (param[2:] == 'cow'):
-                return [s for s in cowsay.list_cows() if s.startswith(pfx)]
+                return [s for s in list_cows() if s.startswith(pfx)]
             if param.startswith("--") and (param[2:] == 'eyes'):
                 return [s for s in default_eyes if s.startswith(pfx)]
             if param.startswith("--") and (param[2:] == 'tongue'):
@@ -109,10 +109,11 @@ class CowCmd(cmd.Cmd):
 
     def complete_make_bubble(self, pfx, line, beg, end):
         input_str = shlex.split(line)
+        default_bool = ['true', 'false']
 
-        if ((len(input_str) == 2) and (input_str[-1] != pfx)) or ((len(input_str) == 3) and (input_str[-1] == pfx)):
-            compl = ['true', 'false']
-            return [s for s in compl if s.startswith(pfx)]
+        for param in input_str[1:]:
+            if param.startswith("--") and (param[2:] == 'wrap_text'):
+                return [s for s in default_bool if s.startswith(pfx)]
 
     def do_exit(self, arg):
         'exit from cow cmd'
