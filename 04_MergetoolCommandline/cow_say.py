@@ -7,7 +7,7 @@ class CowCmd(cmd.Cmd):
     intro = 'Welcome to cowsay cmd!\n'
     prompt = 'cow says: '
 
-    def cowsay(self, arg):
+    def do_cowsay(self, arg):
         '''
         arguments: 
             message: a string to wrap in the text bubble
@@ -28,7 +28,7 @@ class CowCmd(cmd.Cmd):
                 add_param = ''
         print(cowsay(params['message'], cow=params['cow'], eyes=params['eyes'], tongue=params['tongue']))
 
-    def list_cows(self, arg):
+    def do_list_cows(self, arg):
         '''
         arguments: 
             cow_path work_dir: path with .cow files
@@ -41,7 +41,7 @@ class CowCmd(cmd.Cmd):
         else:
             print(list_cows(input_str[0]))
 
-    def cowthink(self, arg):
+    def do_cowthink(self, arg):
         '''
         arguments: 
             message: a string to wrap in the text bubble
@@ -62,7 +62,7 @@ class CowCmd(cmd.Cmd):
                 add_param = ''
         print(cowthink(params['message'], cow=params['cow'], eyes=params['eyes'], tongue=params['tongue']))
 
-    def make_bubble(self, arg):
+    def do_make_bubble(self, arg):
         '''
         arguments: 
             wrap_text=True: wraps text if is true
@@ -87,7 +87,7 @@ class CowCmd(cmd.Cmd):
                 add_param = ''
         print(make_bubble(params['message'], brackets=params['brackets'], width=params['width'], wrap_text=params['wrap_text']))
 
-    def exit(self, arg):
+    def do_exit(self, arg):
         'exit from cow cmd'
         print('Bye')
         return 1
