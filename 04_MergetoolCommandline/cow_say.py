@@ -1,6 +1,20 @@
 import cmd
 import shlex
+import readline
 from cowsay import cowsay, list_cows, cowthink, make_bubble, THOUGHT_OPTIONS
+
+
+def complete_saythink(pfx, line, beg, end):
+        input_str = shlex.split(line)
+        default_eyes = ['oo', 'xx', 'pp', 'zz', 'ff', 'ao', 'ab']
+        default_tongue = ['ii', 'mn', 'qk', 'df', 'dk', 'uu']
+        for param in input_str[1:]:
+            if param.startswith("--") and (param[2:] == 'cow'):
+                return [s for s in cowsay.list_cows() if s.startswith(pfx)]
+            if param.startswith("--") and (param[2:] == 'eyes'):
+                return [s for s in default_eyes if s.startswith(pfx)]
+            if param.startswith("--") and (param[2:] == 'tongue'):
+                return [s for s in default_tongue if s.startswith(pfx)]
 
 
 class CowCmd(cmd.Cmd):
@@ -27,6 +41,9 @@ class CowCmd(cmd.Cmd):
                 params[add_param] = param
                 add_param = ''
         print(cowsay(params['message'], cow=params['cow'], eyes=params['eyes'], tongue=params['tongue']))
+
+    def complete_cowsay(self, pfx, line, beg, end):
+        return complete_saythink(pfx, line, beg, end)
 
     def do_list_cows(self, arg):
         '''
@@ -62,6 +79,9 @@ class CowCmd(cmd.Cmd):
                 add_param = ''
         print(cowthink(params['message'], cow=params['cow'], eyes=params['eyes'], tongue=params['tongue']))
 
+    def complete_cowthink(self, pfx, line, beg, end):
+        return complete_saythink(pfx, line, beg, end)
+
     def do_make_bubble(self, arg):
         '''
         arguments: 
@@ -86,6 +106,13 @@ class CowCmd(cmd.Cmd):
                     params[add_param] = param
                 add_param = ''
         print(make_bubble(params['message'], brackets=params['brackets'], width=params['width'], wrap_text=params['wrap_text']))
+
+    def complete_make_bubble(self, pfx, line, beg, end):
+        input_str = shlex.split(line)
+
+        if ((len(input_str) == 2) and (input_str[-1] != pfx)) or ((len(input_str) == 3) and (input_str[-1] == pfx)):
+            compl = ['true', 'false']
+            return [s for s in compl if s.startswith(pfx)]
 
     def do_exit(self, arg):
         'exit from cow cmd'
