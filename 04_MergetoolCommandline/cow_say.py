@@ -1,6 +1,6 @@
 import cmd
 import shlex
-from cowsay import cowsay
+from cowsay import cowsay, list_cows
 
 
 class CowCmd(cmd.Cmd):
@@ -27,6 +27,19 @@ class CowCmd(cmd.Cmd):
                 params[add_param] = param
                 add_param = ''
         print(cowsay(params['message'], cow=params['cow'], eyes=params['eyes'], tongue=params['tongue']))
+
+    def list_cows(self, arg):
+        '''
+        arguments: 
+            cow_path work_dir: path with .cow files
+
+        Lists all cow file names in the given directory
+        '''
+        input_str = shlex.split(arg)
+        if len(arg) == 0:
+            print(list_cows())
+        else:
+            print(list_cows(input_str[0]))
 
     def exit(self, arg):
         'exit from cow cmd'
