@@ -1,6 +1,6 @@
 import cmd
 import shlex
-from cowsay import cowsay, list_cows
+from cowsay import cowsay, list_cows, cowthink
 
 
 class CowCmd(cmd.Cmd):
@@ -40,6 +40,27 @@ class CowCmd(cmd.Cmd):
             print(list_cows())
         else:
             print(list_cows(input_str[0]))
+
+    def cowthink(self, arg):
+        '''
+        arguments: 
+            message: a string to wrap in the text bubble
+            cow='default': the name of the cow (valid names from list_cows)
+            eyes='oo': a custom eye string
+            tongue=' ': a custom tongue string
+
+        Output cow thinking the message
+        '''
+        input_str = shlex.split(arg)
+        params = {"message": input_str[0], "cow": "default", "eyes" : "oo", "tongue" : "  "}
+        add_param = ''
+        for param in input_str[1:]:
+            if param.startswith("--") and (param[2:] in params):
+                add_param = param[2:]
+            elif len(add_param):
+                params[add_param] = param
+                add_param = ''
+        print(cowthink(params['message'], cow=params['cow'], eyes=params['eyes'], tongue=params['tongue']))
 
     def exit(self, arg):
         'exit from cow cmd'
