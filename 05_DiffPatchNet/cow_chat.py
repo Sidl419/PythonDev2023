@@ -2,7 +2,10 @@ import asyncio
 import shlex
 import readline
 
+from cowsay import list_cows
+
 clients = {}
+cow_set = set(list_cows())
 
 async def chat(reader, writer):
     me = "{}:{}".format(*writer.get_extra_info('peername'))
@@ -23,6 +26,8 @@ async def chat(reader, writer):
                 if command == 'who':
                     writer.write(f"Active cows: \n{', '.join(clients.keys())}\n".encode())
                     await writer.drain()
+                elif command == 'cows':
+                    writer.write(f"Available cows: {', '.join(cow_set)}\n".encode())
                 else:
                     for out in clients.values():
                         if out is not clients[me]:
