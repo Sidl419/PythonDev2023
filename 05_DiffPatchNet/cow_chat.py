@@ -11,6 +11,7 @@ async def chat(reader, writer):
     me = "{}:{}".format(*writer.get_extra_info('peername'))
     print(me)
     clients[me] = asyncio.Queue()
+    is_active = False
 
     send = asyncio.create_task(reader.readline())
     receive = asyncio.create_task(clients[me].get())
@@ -26,8 +27,31 @@ async def chat(reader, writer):
                 if command == 'who':
                     writer.write(f"Active cows: \n{', '.join(clients.keys())}\n".encode())
                     await writer.drain()
+
                 elif command == 'cows':
                     writer.write(f"Available cows: {', '.join(cow_set)}\n".encode())
+
+                elif command == 'login':
+                    if is_active:
+                        writer.write(f"You already registered as {me}\n".encode())
+                        await writer.drain()
+                    else:
+                        if len(input_line) < 2:
+                            writer.write("No argument for login\n".encode())
+                            await writer.drain()
+                        else:
+                            name = input_line[1]
+                            if name in cow_set:
+                                cow_set -= set(name)
+                                clients[name] = asyncio.Queue()
+                                writer.write(f"Registered as {name}\n".encode())
+                                await writer.drain()
+                                is_active = True
+                                receive.cancel()
+                                receive = asyncio.create_task(clients[me].get())
+                            else:
+                                writer.write("That cow is unavailable\n".encode())
+                                await writer.drain()
                 else:
                     for out in clients.values():
                         if out is not clients[me]:
