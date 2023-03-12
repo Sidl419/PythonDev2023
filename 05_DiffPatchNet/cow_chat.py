@@ -8,7 +8,7 @@ clients = {}
 cow_set = set(list_cows())
 
 async def chat(reader, writer):
-    me = "{}:{}".format(*writer.get_extra_info('peername'))
+    me = "{}:{}".format(*writer.get_extra_info('peerme'))
     print(me)
     clients[me] = asyncio.Queue()
     is_active = False
@@ -41,13 +41,13 @@ async def chat(reader, writer):
                             writer.write("No argument for login\n".encode())
                             await writer.drain()
                         else:
-                            name = input_line[1]
-                            if name in cow_set:
-                                cow_set -= set(name)
-                                clients[name] = asyncio.Queue()
+                            me = input_line[1]
+                            if me in cow_set:
+                                cow_set -= set(me)
+                                clients[me] = asyncio.Queue()
                                 is_active = True
 
-                                writer.write(f"Registered as {name}\n".encode())
+                                writer.write(f"Registered as {me}\n".encode())
                                 await writer.drain()
 
                                 receive.cancel()
@@ -67,7 +67,21 @@ async def chat(reader, writer):
                         else:
                             reciever = input_line[1]
                             message = input_line[2]
-                            await clients[reciever].put(f"\n{name} whispers:\n{cowsay(message, cow=name)}")
+                            await clients[reciever].put(f"{me} whispers:\n{cowsay(message, cow=me)}")
+
+                elif command == 'yield':
+                    if not is_active:
+                        writer.write("You have to login first\n".encode())
+                        await writer.drain()
+                    else:
+                        if len(input_line) < 2:
+                            writer.write("No argument for yield\n".encode())
+                            await writer.drain()
+                        else:
+                            message = input_line[1]
+                            for out in clients.values():
+                                if out is not clients[me]:
+                                    await out.put(f"{me} says:\n{cowsay(message, cow=me)}")
 
                 elif command == 'quit':
                     is_quit = True
