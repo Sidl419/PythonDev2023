@@ -36,8 +36,19 @@ class CowClient(cmd.Cmd):
             s.send("cows\n".encode())
             msg = recv(None).strip().split(': ')[1]
             cows = msg.split(', ')
-            #print(cows)
             return [s for s in cows if s.startswith(pfx)]
+        
+    def do_say(self, args):
+        'send message to some conrete user'
+        s.send(f"say {args}\n".encode())
+
+    def complete_say(self, pfx, line, beg, end):
+        with lock:
+            if len(pfx.split()) <= 1:
+                s.send("who\n".encode())
+                msg = recv(None).strip().split(': ')[1]
+                who = msg.split(', ')
+                return [s for s in who if s.startswith(pfx)]
         
 
 def recv(timeout=0.):
@@ -54,7 +65,7 @@ def messenger(cmdline):
             with lock:
                 msg = recv()
             if msg:
-                print(msg.strip())
+                print(f"\n{msg.strip()}")
                 print(f"{cmdline.prompt}{readline.get_line_buffer()}", end="", flush=True)
     except ValueError as e:
         print("your session is closed")
