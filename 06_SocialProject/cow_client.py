@@ -10,13 +10,21 @@ lock = threading.Lock()
 class CowClient(cmd.Cmd):
 
     def do_who(self, args):
-        'list available cows from the server'
+        'list active cows from the server'
         s.send("who\n".encode())
 
     def do_exit(self, args):
         'exit from cow client'
         s.send("exit\n".encode())
         return 1
+    
+    def do_cows(self, args):
+        'list available cows from the server'
+        s.send("cows\n".encode())
+
+    def do_yield(self, args):
+        'send message to every user'
+        s.send("yield {args.strip()}\n".encode())
 
 
 def messenger(cmdline):
