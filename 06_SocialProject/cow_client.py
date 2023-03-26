@@ -1,22 +1,30 @@
 import cmd
 import threading
-import time
 import readline
+import socket
+
+
+lock = threading.Lock()
 
 
 class CowClient(cmd.Cmd):
 
-    def do_echo(self, arg):
-        print(arg)
+    def do_who(self, args):
+        s.send("who\n".encode())
 
 
-def spam(cmdline, timeout, count):
-    for i in range(count):
-        time.sleep(timeout)
-        print(f"\nI'm a message № {i}!\n{cmdline.prompt}{readline.get_line_buffer()}", end="", flush=True)
+def messenger(cmdline):
+    while True:
+        with lock:
+            msg = s.recv(1024).decode()
+        if msg:
+            print(msg.strip())
+            print(f"{cmdline.prompt}{readline.get_line_buffer()}", end="", flush=True)
 
 
-cmdline = CowClient()
-timer = threading.Thread(target=spam, args=(cmdline, 3, 10))
-timer.start()
-cmdline.cmdloop()
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.connect(('0.0.0.0', 1337))
+    cmdline = CowClient()
+    chat = threading.Thread(target=messenger, args=(cmdline,))
+    chat.start()
+    cmdline.cmdloop()
